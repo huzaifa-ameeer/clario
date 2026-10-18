@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { LoaderCircle, Menu, Moon, Sun, X } from "lucide-react";
 import api from "../utils/api";
 import { notify } from "../utils/notify";
@@ -14,6 +14,7 @@ const sectionIds = ["home", "how-it-works", "features"];
 
 function Navbar() {
   const location = useLocation();
+  const navigate = useNavigate();
   const showSectionLinks = location.pathname === "/";
   const [isOpen, setIsOpen] = useState(false);
   const [active, setActive] = useState("home");
@@ -82,6 +83,7 @@ function Navbar() {
       window.dispatchEvent(new Event("auth-user-updated"));
       setIsOpen(false);
       notify("Logged out successfully");
+      navigate("/");
     } catch (error) {
       const message =
         error.response?.data?.message || "Logout failed. Please try again.";
