@@ -7,6 +7,7 @@ import Signup from './pages/Signup.jsx'
 import ForgotPassword from './pages/ForgotPassword.jsx'
 import VerifyOtp from './pages/VerifyOtp.jsx'
 import Main from './pages/Main.jsx'
+import History from './pages/History.jsx'
 import ToastNotification from './components/ToastNotification.jsx'
 
 function App() {
@@ -28,6 +29,14 @@ function App() {
           element={
             <RequireAuth>
               <Main />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/history"
+          element={
+            <RequireAuth>
+              <History />
             </RequireAuth>
           }
         />
