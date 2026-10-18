@@ -144,7 +144,7 @@ function Navbar() {
           ) : (
             <Link
               to="/login"
-              className="rounded-full bg-gray-900 px-5 py-2 text-sm font-medium text-white transition-colors duration-200 hover:bg-blue-600 dark:bg-blue-600 dark:text-white dark:hover:bg-purple-600"
+              className="rounded-full bg-gray-900 px-5 py-2 text-sm font-medium text-white transition-colors duration-200 hover:bg-blue-600 dark:bg-blue-600 dark:text-white dark:hover:bg-blue-700"
             >
               Get Started
             </Link>
@@ -228,7 +228,7 @@ function Navbar() {
               <Link
                 to="/login"
                 onClick={closeMenu}
-                className="rounded-full bg-gray-900 px-5 py-2.5 text-center text-sm font-medium text-white transition-colors duration-200 hover:bg-blue-600 dark:bg-blue-600 dark:text-white dark:hover:bg-purple-600"
+                className="rounded-full bg-gray-900 px-5 py-2.5 text-center text-sm font-medium text-white transition-colors duration-200 hover:bg-blue-600 dark:bg-blue-600 dark:text-white dark:hover:bg-blue-700"
               >
                 Get Started
               </Link>
