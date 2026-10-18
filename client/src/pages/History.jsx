@@ -6,6 +6,17 @@ import { notify } from "../utils/notify";
 
 const DOT_COUNT = 8;
 
+const BULLET_STYLES = [
+  { border: "border-red-300 dark:border-red-800", badge: "bg-red-500" },
+  { border: "border-green-300 dark:border-green-700", badge: "bg-green-500" },
+  { border: "border-blue-300 dark:border-blue-800", badge: "bg-blue-500" },
+  {
+    border: "border-orange-300 dark:border-orange-700",
+    badge: "bg-orange-500",
+  },
+  { border: "border-purple-300 dark:border-purple-800", badge: "bg-purple-500" },
+];
+
 function ChatGPTSpinner() {
   return (
     <div
@@ -123,7 +134,7 @@ function History() {
                   No documents yet
                 </h2>
                 <p className="max-w-sm text-sm leading-relaxed text-gray-500 dark:text-gray-400">
-                  Upload your first document and Clario AI will turn it into a
+                  Upload your first document and Clariou AI will turn it into a
                   clean, scannable summary.
                 </p>
                 <Link
@@ -273,15 +284,25 @@ function History() {
               </h2>
 
               <ul className="mt-6 space-y-3.5">
-                {selected.notes.bullets.map((bullet, index) => (
-                  <li
-                    key={index}
-                    className="animate-fade-up rounded-2xl border border-gray-100 bg-gray-50/70 px-4 py-3.5 text-sm leading-relaxed text-gray-700 sm:text-base dark:border-gray-800 dark:bg-gray-800/40 dark:text-gray-300"
-                    style={{ animationDelay: `${index * 90 + 150}ms` }}
-                  >
-                    {bullet}
-                  </li>
-                ))}
+                {selected.notes.bullets.map((bullet, index) => {
+                  const style = BULLET_STYLES[index % BULLET_STYLES.length];
+                  return (
+                    <li
+                      key={index}
+                      className={`animate-fade-up flex items-start gap-3 rounded-2xl border bg-gray-50/70 px-4 py-3.5 dark:bg-gray-800/40 ${style.border}`}
+                      style={{ animationDelay: `${index * 90 + 150}ms` }}
+                    >
+                      <span
+                        className={`mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs font-bold text-white ${style.badge}`}
+                      >
+                        {index + 1}
+                      </span>
+                      <span className="text-sm leading-relaxed text-gray-700 sm:text-base dark:text-gray-300">
+                        {bullet}
+                      </span>
+                    </li>
+                  );
+                })}
               </ul>
             </div>
           </div>

@@ -1,11 +1,22 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { LoaderCircle } from "lucide-react";
+import { Clock, Heart, LoaderCircle } from "lucide-react";
 import api from "../utils/api";
 import { notify } from "../utils/notify";
 
 const MAX_SIZE = 5 * 1024 * 1024;
 const ALLOWED_EXTENSIONS = [".pdf", ".docx"];
+
+const BULLET_STYLES = [
+  { border: "border-red-300 dark:border-red-800", badge: "bg-red-500" },
+  { border: "border-green-300 dark:border-green-700", badge: "bg-green-500" },
+  { border: "border-blue-300 dark:border-blue-800", badge: "bg-blue-500" },
+  {
+    border: "border-orange-300 dark:border-orange-700",
+    badge: "bg-orange-500",
+  },
+  { border: "border-purple-300 dark:border-purple-800", badge: "bg-purple-500" },
+];
 
 function Main() {
   const [user, setUser] = useState(() => {
@@ -129,13 +140,14 @@ function Main() {
     progress < 40
       ? "Uploading your document…"
       : progress < 90
-        ? "Clario AI is reading every page…"
+        ? "Clariou AI is reading every page…"
         : "Almost ready…";
 
   return (
     <section className="relative min-h-screen overflow-hidden bg-white pt-16 dark:bg-[#030712]">
       <div className="relative mx-auto flex min-h-[calc(100vh-4rem)] max-w-3xl flex-col items-center gap-6 px-6 py-14 text-center">
-        <span className="inline-flex items-center rounded-full border border-gray-900 bg-transparent px-4 py-1.5 text-xs font-medium text-gray-900 dark:border-white dark:text-white">
+        <span className="inline-flex items-center gap-2 rounded-full border border-gray-900 bg-transparent px-4 py-1.5 text-xs font-medium text-gray-900 dark:border-white dark:text-white">
+          <Heart size={13} className="fill-current" />
           Loved by readers, powered by AI
         </span>
 
@@ -144,7 +156,7 @@ function Main() {
         </h1>
 
         <p className="mx-auto max-w-xl text-base leading-relaxed text-gray-600 sm:text-lg dark:text-gray-400">
-          Drop in any PDF or Word document and Clario turns it into a clean,
+          Drop in any PDF or Word document and Clariou turns it into a clean,
           scannable summary — sharp bullets, key takeaways, nothing you don't
           need.
         </p>
@@ -153,6 +165,7 @@ function Main() {
           to="/history"
           className="mt-1 inline-flex items-center gap-2 rounded-full border border-gray-300 px-5 py-2 text-sm font-medium text-gray-700 transition-colors duration-200 hover:border-gray-900 hover:text-gray-900 dark:border-gray-700 dark:text-gray-300 dark:hover:border-white dark:hover:text-white"
         >
+          <Clock size={15} />
           View history
         </Link>
 
@@ -237,15 +250,25 @@ function Main() {
             </h2>
 
             <ul className="mt-6 space-y-3.5">
-              {result.bullets.map((bullet, index) => (
-                <li
-                  key={index}
-                  className="animate-fade-up rounded-2xl border border-gray-100 bg-gray-50/70 px-4 py-3.5 text-sm leading-relaxed text-gray-700 sm:text-base dark:border-gray-800 dark:bg-gray-800/40 dark:text-gray-300"
-                  style={{ animationDelay: `${index * 90 + 150}ms` }}
-                >
-                  {bullet}
-                </li>
-              ))}
+              {result.bullets.map((bullet, index) => {
+                const style = BULLET_STYLES[index % BULLET_STYLES.length];
+                return (
+                  <li
+                    key={index}
+                    className={`animate-fade-up flex items-start gap-3 rounded-2xl border bg-gray-50/70 px-4 py-3.5 dark:bg-gray-800/40 ${style.border}`}
+                    style={{ animationDelay: `${index * 90 + 150}ms` }}
+                  >
+                    <span
+                      className={`mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs font-bold text-white ${style.badge}`}
+                    >
+                      {index + 1}
+                    </span>
+                    <span className="text-sm leading-relaxed text-gray-700 sm:text-base dark:text-gray-300">
+                      {bullet}
+                    </span>
+                  </li>
+                );
+              })}
             </ul>
 
               <div className="mt-8 flex flex-wrap items-center gap-4">
@@ -257,10 +280,11 @@ function Main() {
                   Analyze another document
                 </button>
                 <Link
-                  to="/"
-                  className="text-sm font-medium text-gray-500 transition-colors duration-200 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
+                  to="/history"
+                  className="inline-flex items-center gap-2 rounded-full border border-gray-300 px-6 py-2.5 text-sm font-semibold text-gray-700 transition-colors duration-200 hover:border-gray-900 hover:text-gray-900 dark:border-gray-700 dark:text-gray-300 dark:hover:border-white dark:hover:text-white"
                 >
-                  Back to home
+                  <Clock size={15} />
+                  View history
                 </Link>
               </div>
           </div>
