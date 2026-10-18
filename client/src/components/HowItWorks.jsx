@@ -6,29 +6,44 @@ const steps = [
     title: 'Upload your document',
     text: 'Drop in a PDF or Word file up to 5MB. Your file is handled securely and never stored.',
     icon: Upload,
+    card: 'bg-blue-600 border-blue-600',
+    iconColor: 'text-white',
+    stepColor: 'text-blue-200',
+    titleColor: 'text-white',
+    textColor: 'text-blue-100',
   },
   {
     step: '02',
     title: 'AI breaks it down',
     text: 'Text is extracted and Gemini digs through every page to find the ideas that actually matter.',
     icon: Sparkles,
+    card: 'bg-gray-900 border-gray-900 dark:bg-gray-800 dark:border-gray-800',
+    iconColor: 'text-white',
+    stepColor: 'text-gray-500',
+    titleColor: 'text-white',
+    textColor: 'text-gray-400',
   },
   {
     step: '03',
     title: 'Read clean bullet points',
     text: 'Get a catchy title and sharp, scannable bullets — no fluff, no walls of text, ready in seconds.',
     icon: FileText,
+    card: 'bg-blue-600 border-blue-600',
+    iconColor: 'text-white',
+    stepColor: 'text-blue-200',
+    titleColor: 'text-white',
+    textColor: 'text-blue-100',
   },
 ]
 
 const cardClass =
-  'group w-full max-w-sm rounded-2xl border border-gray-200 bg-white p-8 transition-all duration-200 ease-out hover:-translate-y-1.5 hover:border-blue-500 hover:shadow-lg dark:border-gray-800 dark:bg-gray-950 dark:hover:border-blue-400'
+  'group w-full max-w-sm rounded-2xl border p-8 transition-all duration-200 ease-out hover:-translate-y-1.5 hover:shadow-lg'
 
 function HowItWorks() {
   return (
     <section
       id="how-it-works"
-      className="flex min-h-[calc(100vh_-_4rem)] scroll-mt-16 flex-col justify-center px-6 pt-4 pb-24"
+      className="flex min-h-[calc(100vh_-_4rem)] scroll-mt-16 flex-col justify-center px-6 py-16"
     >
       <div className="mx-auto max-w-6xl">
         <div className="mx-auto max-w-2xl text-center">
@@ -47,19 +62,23 @@ function HowItWorks() {
               key={step.step}
               className="flex flex-col items-center gap-6 lg:flex-row lg:gap-4"
             >
-              <div className={cardClass}>
+              <div className={`${cardClass} ${step.card}`}>
                 <div className="flex items-center justify-between">
-                  <span className="text-blue-600 transition-colors duration-200 group-hover:text-blue-500 dark:text-blue-400 dark:group-hover:text-blue-300">
+                  <span className={step.iconColor}>
                     <step.icon size={24} strokeWidth={2} />
                   </span>
-                  <span className="text-sm font-semibold tracking-widest text-gray-300 dark:text-gray-700">
+                  <span
+                    className={`text-sm font-semibold tracking-widest ${step.stepColor}`}
+                  >
                     {step.step}
                   </span>
                 </div>
-                <h3 className="mt-6 text-lg font-bold text-gray-900 dark:text-white">
+                <h3 className={`mt-6 text-lg font-bold ${step.titleColor}`}>
                   {step.title}
                 </h3>
-                <p className="mt-3 text-sm leading-relaxed text-gray-600 dark:text-gray-400">
+                <p
+                  className={`mt-3 text-sm leading-relaxed ${step.textColor}`}
+                >
                   {step.text}
                 </p>
               </div>
