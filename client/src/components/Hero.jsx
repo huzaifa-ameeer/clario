@@ -9,7 +9,7 @@ function Hero() {
           <span className="relative inline-block">
             <span
               aria-hidden="true"
-              className="absolute -inset-x-1.5 -inset-y-0.5 -rotate-2 rounded-md bg-gradient-to-r from-orange-400 to-amber-400 opacity-60 sm:-inset-x-2 sm:-inset-y-1 sm:-rotate-2"
+              className="absolute -inset-x-1 -inset-y-0.5 -rotate-2 rounded-md bg-gradient-to-r from-orange-400 to-amber-400 opacity-60 sm:-inset-x-2 sm:-inset-y-1 sm:-rotate-2"
             />
             <span className="relative">beautiful bullet points</span>
           </span>{' '}
