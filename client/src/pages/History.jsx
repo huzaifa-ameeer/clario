@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowLeft, Clock } from "lucide-react";
+import { ArrowLeft, Clock, Trash2 } from "lucide-react";
 import api from "../utils/api";
 import { notify } from "../utils/notify";
 
@@ -73,6 +73,8 @@ function History() {
   const [loading, setLoading] = useState(true);
   const [view, setView] = useState("list");
   const [selected, setSelected] = useState(null);
+  const [confirmId, setConfirmId] = useState(null);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     const fetchHistory = async () => {
@@ -94,11 +96,39 @@ function History() {
   const openDetails = (doc) => {
     setSelected(doc);
     setView("details");
+    setConfirmId(null);
   };
 
   const backToList = () => {
     setView("list");
     setSelected(null);
+    setConfirmId(null);
+  };
+
+  const handleDelete = async (doc) => {
+    if (deleting) return;
+    if (confirmId !== doc._id) {
+      setConfirmId(doc._id);
+      return;
+    }
+    setDeleting(true);
+    try {
+      await api.delete(`/documents/${doc._id}`);
+      setDocuments((prev) => prev.filter((d) => d._id !== doc._id));
+      if (selected?._id === doc._id) {
+        setView("list");
+        setSelected(null);
+      }
+      setConfirmId(null);
+      notify("Document deleted");
+    } catch (err) {
+      notify(
+        err.response?.data?.message || "Failed to delete document",
+        "error",
+      );
+    } finally {
+      setDeleting(false);
+    }
   };
 
   return (
@@ -162,9 +192,16 @@ function History() {
                     className="animate-fade-up"
                     style={{ animationDelay: `${index * 70}ms` }}
                   >
-                    <button
-                      type="button"
+                    <div
+                      role="button"
+                      tabIndex={0}
                       onClick={() => openDetails(doc)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault();
+                          openDetails(doc);
+                        }
+                      }}
                       className="group flex w-full cursor-pointer items-center gap-4 rounded-2xl border border-gray-200 bg-white px-5 py-4 text-left transition-colors duration-200 hover:border-gray-900 dark:border-gray-800 dark:bg-gray-900/60 dark:hover:border-white"
                     >
                       <span className="min-w-0 flex-1">
@@ -185,7 +222,24 @@ function History() {
                       >
                         {doc.status === "completed" ? "Completed" : "Failed"}
                       </span>
-                    </button>
+                      <button
+                        type="button"
+                        disabled={deleting}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDelete(doc);
+                        }}
+                        aria-label="Delete document"
+                        className={`flex shrink-0 cursor-pointer items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-medium transition-colors duration-200 disabled:cursor-not-allowed disabled:opacity-60 ${
+                          confirmId === doc._id
+                            ? "border-red-500 bg-red-500 text-white"
+                            : "border-gray-300 text-gray-500 hover:border-red-500 hover:text-red-600 dark:border-gray-700 dark:text-gray-400 dark:hover:border-red-400 dark:hover:text-red-400"
+                        }`}
+                      >
+                        <Trash2 size={12} />
+                        {confirmId === doc._id ? "Delete?" : "Delete"}
+                      </button>
+                    </div>
                   </li>
                 ))}
               </ul>
@@ -254,7 +308,10 @@ function History() {
               {selected.status === "completed" && selected.notes?.title ? (
                 <button
                   type="button"
-                  onClick={() => setView("response")}
+                  onClick={() => {
+                    setConfirmId(null);
+                    setView("response");
+                  }}
                   className="mt-7 w-full cursor-pointer rounded-2xl border border-gray-200 bg-gray-50/70 px-5 py-4 text-left transition-colors duration-200 hover:border-gray-900 dark:border-gray-800 dark:bg-gray-800/40 dark:hover:border-white"
                 >
                   <span className="block text-sm font-semibold text-gray-900 sm:text-base dark:text-white">
@@ -269,6 +326,20 @@ function History() {
                   Analysis failed for this document — no summary was generated.
                 </p>
               )}
+
+              <button
+                type="button"
+                disabled={deleting}
+                onClick={() => handleDelete(selected)}
+                className={`mt-7 inline-flex cursor-pointer items-center gap-2 rounded-full border px-5 py-2 text-sm font-medium transition-colors duration-200 disabled:cursor-not-allowed disabled:opacity-60 ${
+                  confirmId === selected._id
+                    ? "border-red-500 bg-red-500 text-white"
+                    : "border-gray-300 text-gray-700 hover:border-red-500 hover:text-red-600 dark:border-gray-700 dark:text-gray-300 dark:hover:border-red-400 dark:hover:text-red-400"
+                }`}
+              >
+                <Trash2 size={14} />
+                {confirmId === selected._id ? "Confirm delete?" : "Delete document"}
+              </button>
             </div>
           </div>
         )}

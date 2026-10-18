@@ -91,3 +91,23 @@ export const getDocumentById = async (req, res) => {
         return res.status(500).json({ message: "Server error", error: error.message })
     }
 }
+
+export const deleteDocument = async (req, res) => {
+    try {
+        const document = await Document.findOneAndDelete({
+            _id: req.params.id,
+            user: req.user.id
+        })
+
+        if (!document) {
+            return res.status(404).json({ message: "Document not found" })
+        }
+
+        return res.status(200).json({ message: "Document deleted successfully" })
+    } catch (error) {
+        if (error.kind === "ObjectId") {
+            return res.status(404).json({ message: "Document not found" })
+        }
+        return res.status(500).json({ message: "Server error", error: error.message })
+    }
+}
