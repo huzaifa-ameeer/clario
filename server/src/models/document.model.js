@@ -1,5 +1,16 @@
 import mongoose from "mongoose"
 
+const notesSchema = new mongoose.Schema({
+    title: {
+        type: String,
+        default: ""
+    },
+    bullets: {
+        type: [String],
+        default: []
+    }
+}, { _id: false })
+
 const documentSchema = new mongoose.Schema({
     user: {
         type: mongoose.Schema.Types.ObjectId,
@@ -23,9 +34,9 @@ const documentSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
-    summary: {
-        type: [String],
-        default: []
+    notes: {
+        type: notesSchema,
+        default: null
     },
     status: {
         type: String,
