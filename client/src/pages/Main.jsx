@@ -32,6 +32,7 @@ function Main() {
   const [fileName, setFileName] = useState("");
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef(null);
+  const abortRef = useRef(null);
 
   useEffect(() => {
     const syncUser = () => {
@@ -94,8 +95,12 @@ function Main() {
     const formData = new FormData();
     formData.append("file", file);
 
+    const controller = new AbortController();
+    abortRef.current = controller;
+
     try {
       const res = await api.post("/documents/analyze", formData, {
+        signal: controller.signal,
         onUploadProgress: (e) => {
           if (e.total) {
             const pct = Math.round((e.loaded / e.total) * 40);
@@ -109,11 +114,26 @@ function Main() {
       setPhase("done");
       notify("Document analyzed successfully");
     } catch (err) {
-      const message = err.response?.data?.message || "Failed to analyze file";
-      notify(message, "error");
+      const canceled =
+        err.code === "ERR_CANCELED" ||
+        err.name === "CanceledError" ||
+        err.name === "AbortError";
+      if (canceled) {
+        notify("Upload cancelled", "error");
+      } else {
+        const message =
+          err.response?.data?.message || "Failed to analyze file";
+        notify(message, "error");
+      }
       setPhase("idle");
       setProgress(0);
+    } finally {
+      abortRef.current = null;
     }
+  };
+
+  const handleCancel = () => {
+    abortRef.current?.abort();
   };
 
   const handleInputChange = (e) => {
@@ -231,6 +251,14 @@ function Main() {
             <div className="inline-flex max-w-full items-center rounded-full border border-gray-200 bg-gray-50 px-4 py-1.5 text-xs font-medium text-gray-600 dark:border-gray-700 dark:bg-gray-800/60 dark:text-gray-300">
               <span className="truncate">{fileName}</span>
             </div>
+
+            <button
+              type="button"
+              onClick={handleCancel}
+              className="cursor-pointer rounded-full border border-gray-300 px-6 py-2 text-sm font-medium text-gray-700 transition-colors duration-200 hover:border-red-500 hover:text-red-600 dark:border-gray-700 dark:text-gray-300 dark:hover:border-red-400 dark:hover:text-red-400"
+            >
+              Cancel
+            </button>
           </div>
         )}
 
