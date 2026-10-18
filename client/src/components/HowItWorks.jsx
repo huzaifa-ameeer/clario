@@ -28,7 +28,7 @@ function HowItWorks() {
   return (
     <section
       id="how-it-works"
-      className="min-h-[calc(100vh_-_4rem)] scroll-mt-16 px-6 pt-4 pb-24"
+      className="flex min-h-[calc(100vh_-_4rem)] scroll-mt-16 flex-col justify-center px-6 pt-4 pb-24"
     >
       <div className="mx-auto max-w-6xl">
         <div className="mx-auto max-w-2xl text-center">
