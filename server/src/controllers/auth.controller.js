@@ -103,3 +103,38 @@ export const logout = async (req, res) => {
         return res.status(500).json({ message: "Server error", error: error.message })
     }
 }
+
+export const forgetPassword = async (req, res) => {
+    try {
+        const { currentPassword, newPassword } = req.body
+
+        if (!currentPassword || !newPassword) {
+            return res.status(400).json({ message: "Current password and new password are required" })
+        }
+
+        const user = await User.findById(req.user.id)
+
+        const isPasswordValid = await bcrypt.compare(currentPassword, user.password)
+        if (!isPasswordValid) {
+            return res.status(401).json({ message: "Current password is incorrect" })
+        }
+
+        const isSamePassword = await bcrypt.compare(newPassword, user.password)
+        if (isSamePassword) {
+            return res.status(400).json({ message: "New password must be different from the current password" })
+        }
+
+        user.password = await bcrypt.hash(newPassword, 10)
+        await user.save()
+
+        res.clearCookie("token", {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "strict"
+        })
+
+        return res.status(200).json({ message: "Password updated successfully, please login again" })
+    } catch (error) {
+        return res.status(500).json({ message: "Server error", error: error.message })
+    }
+}
