@@ -101,8 +101,6 @@ function Navbar() {
         : "text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
     }`;
 
-  const firstName =
-    typeof user?.name === "string" ? user.name.trim().split(/\s+/)[0] : "";
   const themeButtonClass =
     "flex h-10 w-10 items-center justify-center rounded-full border border-gray-200 text-gray-600 transition-colors duration-200 hover:border-gray-900 hover:text-gray-900 dark:border-gray-700 dark:text-gray-300 dark:hover:border-white dark:hover:text-white";
 
@@ -125,14 +123,11 @@ function Navbar() {
                 {link.label}
               </a>
             ))}
-          {firstName ? (
+          {user ? (
             <div className="flex items-center gap-2">
-              <span className="cursor-pointer rounded-full border border-green-500 px-5 py-2 text-sm font-medium text-green-700 dark:text-green-400">
-                {firstName}
-              </span>
               <Link
                 to="/main"
-                className="rounded-full bg-gradient-to-r from-violet-600 to-purple-600 px-5 py-2 text-sm font-semibold text-white transition-colors duration-200 hover:from-violet-700 hover:to-purple-700"
+                className="rounded-full bg-blue-600 px-5 py-2 text-sm font-semibold text-white transition-colors duration-200 hover:bg-blue-700"
               >
                 Dive now
               </Link>
@@ -210,15 +205,12 @@ function Navbar() {
                   {link.label}
                 </a>
               ))}
-            {firstName ? (
-              <div className="flex items-center gap-2">
-                <span className="w-fit cursor-pointer rounded-full border border-green-500 px-5 py-2.5 text-sm font-medium text-green-700 dark:text-green-400">
-                  {firstName}
-                </span>
+            {user ? (
+              <div className="flex flex-col items-start gap-3">
                 <Link
                   to="/main"
                   onClick={closeMenu}
-                  className="w-fit rounded-full bg-gradient-to-r from-violet-600 to-purple-600 px-5 py-2.5 text-center text-sm font-semibold text-white transition-colors duration-200 hover:from-violet-700 hover:to-purple-700"
+                  className="w-fit rounded-full bg-blue-600 px-5 py-2.5 text-center text-sm font-semibold text-white transition-colors duration-200 hover:bg-blue-700"
                 >
                   Dive now
                 </Link>
