@@ -24,7 +24,7 @@ function Hero() {
 
         <div className="flex flex-wrap items-center justify-center gap-4 pt-2">
           <Link
-            to="/login"
+            to="/main"
             className="rounded-full bg-gray-900 px-7 py-3 text-sm font-semibold text-white transition-colors duration-200 hover:bg-blue-600 dark:bg-blue-600 dark:text-white dark:hover:bg-purple-600"
           >
             Get Started — it's free

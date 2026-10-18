@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { LoaderCircle, Menu, Moon, Sun, X } from "lucide-react";
 import api from "../utils/api";
 import { notify } from "../utils/notify";
@@ -13,6 +13,8 @@ const navLinks = [
 const sectionIds = ["home", "how-it-works", "features"];
 
 function Navbar() {
+  const location = useLocation();
+  const showSectionLinks = location.pathname === "/";
   const [isOpen, setIsOpen] = useState(false);
   const [active, setActive] = useState("home");
   const [logoutError, setLogoutError] = useState("");
@@ -115,16 +117,23 @@ function Navbar() {
         </Link>
 
         <div className="hidden items-center gap-8 sm:flex">
-          {navLinks.map((link) => (
-            <a key={link.label} href={link.href} className={linkClass(link.id)}>
-              {link.label}
-            </a>
-          ))}
+          {showSectionLinks &&
+            navLinks.map((link) => (
+              <a key={link.label} href={link.href} className={linkClass(link.id)}>
+                {link.label}
+              </a>
+            ))}
           {firstName ? (
             <div className="flex items-center gap-2">
               <span className="cursor-pointer rounded-full border border-green-500 px-5 py-2 text-sm font-medium text-green-700 dark:text-green-400">
                 {firstName}
               </span>
+              <Link
+                to="/main"
+                className="rounded-full bg-gradient-to-r from-violet-600 to-purple-600 px-5 py-2 text-sm font-semibold text-white transition-colors duration-200 hover:from-violet-700 hover:to-purple-700"
+              >
+                Dive now
+              </Link>
               <button
                 type="button"
                 onClick={handleLogout}
@@ -188,21 +197,29 @@ function Navbar() {
       {isOpen && (
         <div className="bg-white px-6 pb-6 pt-4 sm:hidden dark:bg-[#030712]">
           <div className="flex flex-col gap-4">
-            {navLinks.map((link) => (
-              <a
-                key={link.label}
-                href={link.href}
-                onClick={closeMenu}
-                className={linkClass(link.id)}
-              >
-                {link.label}
-              </a>
-            ))}
+            {showSectionLinks &&
+              navLinks.map((link) => (
+                <a
+                  key={link.label}
+                  href={link.href}
+                  onClick={closeMenu}
+                  className={linkClass(link.id)}
+                >
+                  {link.label}
+                </a>
+              ))}
             {firstName ? (
               <div className="flex items-center gap-2">
                 <span className="w-fit cursor-pointer rounded-full border border-green-500 px-5 py-2.5 text-sm font-medium text-green-700 dark:text-green-400">
                   {firstName}
                 </span>
+                <Link
+                  to="/main"
+                  onClick={closeMenu}
+                  className="w-fit rounded-full bg-gradient-to-r from-violet-600 to-purple-600 px-5 py-2.5 text-center text-sm font-semibold text-white transition-colors duration-200 hover:from-violet-700 hover:to-purple-700"
+                >
+                  Dive now
+                </Link>
                 <button
                   type="button"
                   onClick={handleLogout}
