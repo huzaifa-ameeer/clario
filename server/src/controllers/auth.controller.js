@@ -7,11 +7,15 @@ import { sendOtpEmail } from "../utils/sendEmail.js"
 const OTP_EXPIRY_MINUTES = 10
 const PASSWORD_RESET_MESSAGE = "If an account exists for that email, an OTP has been sent"
 
+const isProduction =
+    process.env.NODE_ENV === "production" ||
+    (process.env.CLIENT_URL || "").startsWith("https://")
+
 const clearAuthCookie = (res) => {
     res.clearCookie("token", {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "strict"
+        secure: isProduction,
+        sameSite: isProduction ? "none" : "strict"
     })
 }
 
@@ -24,8 +28,8 @@ const generateToken = (userId) => {
 const setTokenCookie = (res, token) => {
     res.cookie("token", token, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "strict",
+        secure: isProduction,
+        sameSite: isProduction ? "none" : "strict",
         maxAge: 7 * 24 * 60 * 60 * 1000
     })
 }
