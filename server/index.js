@@ -6,17 +6,26 @@ import connectDB from "./src/config/db.js"
 import authRouter from "./src/routes/auth.route.js"
 import documentRouter from "./src/routes/document.route.js"
 
+dotenv.config()
+
 const app = express()
 
-dotenv.config()
-await connectDB()
+const allowedOrigins = (process.env.CLIENT_URL || "")
+    .split(",")
+    .map((origin) => origin.trim())
+    .filter(Boolean)
 
+app.set("trust proxy", 1)
 app.use(express.json())
 app.use(cookieParser())
 app.use(cors({
-    origin: process.env.CLIENT_URL,
+    origin: allowedOrigins,
     credentials: true
 }))
+
+app.get("/health", (req, res) => {
+    res.status(200).json({ status: "ok" })
+})
 
 app.use("/api/auth", authRouter)
 app.use("/api/documents", documentRouter)
@@ -31,8 +40,10 @@ app.use((error, req, res, next) => {
     return res.status(500).json({ message: "Server error", error: error.message })
 })
 
-const port = process.env.PORT
+await connectDB()
 
-app.listen(port, ()=> {
+const port = process.env.PORT || 8000
+
+app.listen(port, () => {
     console.log(`Server listening on port: ${port}`)
 })
