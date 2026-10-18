@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { ArrowLeft, LoaderCircle } from 'lucide-react'
+import { ArrowLeft, ChevronDown, LoaderCircle } from 'lucide-react'
 import api from '../utils/api'
 import { notify } from '../utils/notify'
 
@@ -117,18 +117,24 @@ function Signup() {
             >
               Occupation
             </label>
-            <select
-              id="occupation"
-              name="occupation"
-              value={formData.occupation}
-              onChange={handleChange}
-              className="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm text-gray-900 transition-colors duration-200 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white dark:focus:border-blue-400 dark:focus:ring-blue-400/10"
-              required
-            >
-              <option value="student">Student</option>
-              <option value="job holder">Job Holder</option>
-              <option value="others">Others</option>
-            </select>
+            <div className="relative">
+              <select
+                id="occupation"
+                name="occupation"
+                value={formData.occupation}
+                onChange={handleChange}
+                className="w-full appearance-none rounded-lg border border-gray-300 px-3 py-2.5 pr-10 text-sm text-gray-900 transition-colors duration-200 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white dark:focus:border-blue-400 dark:focus:ring-blue-400/10"
+                required
+              >
+                <option value="student">Student</option>
+                <option value="job holder">Job Holder</option>
+                <option value="others">Others</option>
+              </select>
+              <ChevronDown
+                size={16}
+                className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400"
+              />
+            </div>
           </div>
 
           <div className="flex flex-col gap-2">
