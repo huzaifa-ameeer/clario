@@ -1,3 +1,4 @@
+import cookieParser from "cookie-parser"
 import dotenv from "dotenv"
 import express from "express"
 import connectDB from "./src/config/db.js"
@@ -9,6 +10,7 @@ dotenv.config()
 await connectDB()
 
 app.use(express.json())
+app.use(cookieParser())
 
 app.use("/api/auth", authRouter)
 
