@@ -106,7 +106,15 @@ function History() {
       <div className="relative mx-auto flex min-h-[calc(100vh-4rem)] max-w-3xl flex-col px-6 py-14">
         {view === "list" && (
           <>
-            <div className="text-center">
+            <Link
+              to="/main"
+              className="inline-flex w-fit items-center gap-2 rounded-full border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition-colors duration-200 hover:border-gray-900 hover:text-gray-900 dark:border-gray-700 dark:text-gray-300 dark:hover:border-white dark:hover:text-white"
+            >
+              <ArrowLeft size={15} />
+              Back to upload
+            </Link>
+
+            <div className="mt-8 text-center">
               <span className="inline-flex items-center rounded-full border border-gray-900 bg-transparent px-4 py-1.5 text-xs font-medium text-gray-900 dark:border-white dark:text-white">
                 Your library
               </span>
