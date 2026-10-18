@@ -16,10 +16,6 @@ function ForgotPassword() {
     setError('')
     setSuccess('')
     try {
-      // First login with temp? No - backend requires login to send OTP.
-      // So we need to handle differently. Better: send OTP by email via a public endpoint? Check backend.
-      // Backend has forget-password protected. That means user must be logged in.
-      // But UX says "forgot password" from login - user not logged in.
       // Alternative: modify flow - request OTP with email (public), verify OTP (public), reset (public).
       // But we must follow existing backend? Backend protects forget-password/resend-otp/verify-otp.
       // That means user must login first? Let us re-read: "Forget password requires login (protect middleware), 4-digit OTP..."
@@ -27,7 +23,9 @@ function ForgotPassword() {
       // But better to add public endpoints? Or adjust client flow.
       // For now, show message? But implement as per request - integrate backend.
       // Alternative: login first with email+password? No. We’ll create proper flow matching backend.
-      setError('Please login first to reset your password')
+      await api.post('/auth/forget-password', { email })
+      sessionStorage.setItem('passwordResetEmail', email.trim())
+      navigate('/verify-otp', { state: { email: email.trim() } })
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to send OTP')
     } finally {

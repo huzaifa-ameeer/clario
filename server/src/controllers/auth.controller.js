@@ -1,9 +1,11 @@
 import bcrypt from "bcryptjs"
 import jwt from "jsonwebtoken"
+import { randomInt } from "node:crypto"
 import User from "../models/user.model.js"
 import { sendOtpEmail } from "../utils/sendEmail.js"
 
 const OTP_EXPIRY_MINUTES = 10
+const PASSWORD_RESET_MESSAGE = "If an account exists for that email, an OTP has been sent"
 
 const clearAuthCookie = (res) => {
     res.clearCookie("token", {
@@ -113,18 +115,21 @@ export const logout = async (req, res) => {
 
 export const forgetPassword = async (req, res) => {
     try {
-        const user = await User.findById(req.user.id)
+        const { email } = req.body
+        if (typeof email !== "string" || !email.trim()) {
+            return res.status(400).json({ message: "Email is required" })
+        }
 
-        const otp = Math.floor(1000 + Math.random() * 9000).toString()
-        const hashedOtp = await bcrypt.hash(otp, 10)
+        const user = await User.findOne({ email: email.trim().toLowerCase() })
+        if (user) {
+            const otp = randomInt(1000, 10000).toString()
+            user.otp = await bcrypt.hash(otp, 10)
+            user.otpExpires = Date.now() + OTP_EXPIRY_MINUTES * 60 * 1000
+            await user.save()
+            await sendOtpEmail(user.email, user.name, otp)
+        }
 
-        user.otp = hashedOtp
-        user.otpExpires = Date.now() + OTP_EXPIRY_MINUTES * 60 * 1000
-        await user.save()
-
-        await sendOtpEmail(user.email, user.name, otp)
-
-        return res.status(200).json({ message: `OTP sent to your email, valid for ${OTP_EXPIRY_MINUTES} minutes` })
+        return res.status(200).json({ message: PASSWORD_RESET_MESSAGE })
     } catch (error) {
         return res.status(500).json({ message: "Server error", error: error.message })
     }
@@ -132,18 +137,21 @@ export const forgetPassword = async (req, res) => {
 
 export const resendOtp = async (req, res) => {
     try {
-        const user = await User.findById(req.user.id)
+        const { email } = req.body
+        if (typeof email !== "string" || !email.trim()) {
+            return res.status(400).json({ message: "Email is required" })
+        }
 
-        const otp = Math.floor(1000 + Math.random() * 9000).toString()
-        const hashedOtp = await bcrypt.hash(otp, 10)
+        const user = await User.findOne({ email: email.trim().toLowerCase() })
+        if (user) {
+            const otp = randomInt(1000, 10000).toString()
+            user.otp = await bcrypt.hash(otp, 10)
+            user.otpExpires = Date.now() + OTP_EXPIRY_MINUTES * 60 * 1000
+            await user.save()
+            await sendOtpEmail(user.email, user.name, otp)
+        }
 
-        user.otp = hashedOtp
-        user.otpExpires = Date.now() + OTP_EXPIRY_MINUTES * 60 * 1000
-        await user.save()
-
-        await sendOtpEmail(user.email, user.name, otp)
-
-        return res.status(200).json({ message: `OTP resent to your email, valid for ${OTP_EXPIRY_MINUTES} minutes` })
+        return res.status(200).json({ message: PASSWORD_RESET_MESSAGE })
     } catch (error) {
         return res.status(500).json({ message: "Server error", error: error.message })
     }
@@ -151,15 +159,25 @@ export const resendOtp = async (req, res) => {
 
 export const verifyOtp = async (req, res) => {
     try {
-        const { otp, newPassword } = req.body
+        const { email, otp, newPassword } = req.body
 
-        if (!otp || !newPassword) {
-            return res.status(400).json({ message: "OTP and new password are required" })
+        if (
+            typeof email !== "string" ||
+            !email.trim() ||
+            typeof otp !== "string" ||
+            !/^\d{4}$/.test(otp) ||
+            typeof newPassword !== "string" ||
+            !newPassword
+        ) {
+            return res.status(400).json({ message: "Email, OTP, and new password are required" })
         }
 
-        const user = await User.findById(req.user.id)
+        const user = await User.findOne({ email: email.trim().toLowerCase() })
+        if (!user || !user.otp || !user.otpExpires) {
+            return res.status(400).json({ message: "Invalid or expired OTP" })
+        }
 
-        if (!user.otp || !user.otpExpires || user.otpExpires < Date.now()) {
+        if (user.otpExpires < Date.now()) {
             return res.status(400).json({ message: "OTP expired, please request a new one" })
         }
 

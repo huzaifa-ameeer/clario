@@ -22,7 +22,9 @@ function Login() {
     setLoading(true)
     setError('')
     try {
-      await api.post('/auth/login', formData)
+      const res = await api.post('/auth/login', formData)
+      localStorage.setItem('authUser', JSON.stringify(res.data.user))
+      window.dispatchEvent(new Event('auth-user-updated'))
       navigate('/dashboard')
     } catch (err) {
       setError(err.response?.data?.message || 'Login failed')

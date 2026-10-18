@@ -11,7 +11,7 @@ function VerifyOtp() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
-  const email = location.state?.email || ''
+  const email = location.state?.email || sessionStorage.getItem('passwordResetEmail') || ''
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -19,8 +19,10 @@ function VerifyOtp() {
     setError('')
     setSuccess('')
     try {
-      const res = await api.post('/auth/verify-otp', { otp, newPassword })
+      const res = await api.post('/auth/verify-otp', { email, otp, newPassword })
       setSuccess(res.data.message)
+      sessionStorage.removeItem('passwordResetEmail')
+      localStorage.removeItem('authUser')
       setTimeout(() => navigate('/login'), 1500)
     } catch (err) {
       setError(err.response?.data?.message || 'Verification failed')
@@ -33,7 +35,7 @@ function VerifyOtp() {
     setLoading(true)
     setError('')
     try {
-      await api.post('/auth/resend-otp')
+      await api.post('/auth/resend-otp', { email })
       setSuccess('OTP resent successfully')
       setTimeout(() => setSuccess(''), 2000)
     } catch (err) {
@@ -95,10 +97,12 @@ function VerifyOtp() {
               type="text"
               value={otp}
               onChange={(e) => {
-                setOtp(e.target.value)
+                setOtp(e.target.value.replace(/\D/g, '').slice(0, 4))
                 setError('')
               }}
               placeholder="1234"
+              inputMode="numeric"
+              pattern="[0-9]{4}"
               maxLength={4}
               className="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm text-gray-900 transition-colors duration-200 placeholder:text-gray-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white dark:placeholder:text-gray-500 dark:focus:border-blue-400 dark:focus:ring-blue-400/10"
               required
