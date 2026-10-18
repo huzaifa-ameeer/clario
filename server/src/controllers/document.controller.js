@@ -55,3 +55,39 @@ export const uploadAndAnalyze = async (req, res) => {
         await fs.promises.unlink(filePath).catch(() => {})
     }
 }
+
+export const getMyDocuments = async (req, res) => {
+    try {
+        const documents = await Document.find({ user: req.user.id })
+            .sort({ createdAt: -1 })
+            .select("originalName mimeType size notes status createdAt updatedAt")
+
+        return res.status(200).json({
+            message: "Document history fetched successfully",
+            count: documents.length,
+            documents
+        })
+    } catch (error) {
+        return res.status(500).json({ message: "Server error", error: error.message })
+    }
+}
+
+export const getDocumentById = async (req, res) => {
+    try {
+        const document = await Document.findOne({
+            _id: req.params.id,
+            user: req.user.id
+        }).select("originalName mimeType size notes status createdAt updatedAt")
+
+        if (!document) {
+            return res.status(404).json({ message: "Document not found" })
+        }
+
+        return res.status(200).json({ document })
+    } catch (error) {
+        if (error.kind === "ObjectId") {
+            return res.status(404).json({ message: "Document not found" })
+        }
+        return res.status(500).json({ message: "Server error", error: error.message })
+    }
+}
