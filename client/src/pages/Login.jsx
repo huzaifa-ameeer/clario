@@ -27,7 +27,7 @@ function Login() {
       localStorage.setItem('authUser', JSON.stringify(res.data.user))
       window.dispatchEvent(new Event('auth-user-updated'))
       notify('Logged in successfully')
-      navigate('/dashboard')
+      navigate('/main')
     } catch (err) {
       const message = err.response?.data?.message || 'Login failed'
       setError(message)
