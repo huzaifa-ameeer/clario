@@ -26,6 +26,51 @@ html {
   animation: toast-slide-in 300ms ease-out both;
 }
 
+@keyframes rgb-pan {
+  to {
+    background-position: 200% 0;
+  }
+}
+
+.animate-rgb-pan {
+  background-size: 200% 100%;
+  animation: rgb-pan 2.5s linear infinite;
+}
+
+@keyframes chatgpt-dot-pulse {
+
+  0%,
+  100% {
+    opacity: 0.2;
+    transform: scale(0.55);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.chatgpt-dot {
+  animation: chatgpt-dot-pulse 1s ease-in-out infinite;
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-up {
+  animation: fade-up 400ms ease-out both;
+}
+
 body {
   font-family: var(--font-sans);
   background-color: #fff;
@@ -53,7 +98,10 @@ section * {
     scroll-behavior: auto;
   }
 
-  .toast-slide-in {
+  .toast-slide-in,
+  .animate-rgb-pan,
+  .chatgpt-dot,
+  .animate-fade-up {
     animation: none;
   }
 
