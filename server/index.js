@@ -3,6 +3,7 @@ import dotenv from "dotenv"
 import express from "express"
 import connectDB from "./src/config/db.js"
 import authRouter from "./src/routes/auth.route.js"
+import documentRouter from "./src/routes/document.route.js"
 import uploadRouter from "./src/routes/upload.route.js"
 
 const app = express()
@@ -15,6 +16,7 @@ app.use(cookieParser())
 
 app.use("/api/auth", authRouter)
 app.use("/api/files", uploadRouter)
+app.use("/api/documents", documentRouter)
 
 app.use((error, req, res, next) => {
     if (error.code === "LIMIT_FILE_SIZE") {
