@@ -1,3 +1,5 @@
+import { Link } from 'react-router-dom'
+
 function Hero() {
   return (
     <section id="home" className="relative overflow-hidden">
@@ -21,15 +23,15 @@ function Hero() {
         </p>
 
         <div className="flex flex-wrap items-center justify-center gap-4 pt-2">
-          <a
-            href="#get-started"
-            className="rounded-full bg-gray-900 px-7 py-3 text-sm font-semibold text-white transition-colors hover:bg-blue-600 dark:bg-blue-600 dark:text-white dark:hover:bg-purple-600"
+          <Link
+            to="/login"
+            className="rounded-full bg-gray-900 px-7 py-3 text-sm font-semibold text-white transition-colors duration-200 hover:bg-blue-600 dark:bg-blue-600 dark:text-white dark:hover:bg-purple-600"
           >
             Get Started — it's free
-          </a>
+          </Link>
           <a
             href="#how-it-works"
-            className="rounded-full border border-gray-300 px-7 py-3 text-sm font-semibold text-gray-700 transition-colors hover:border-gray-900 hover:text-gray-900 dark:border-gray-700 dark:text-gray-300 dark:hover:border-white dark:hover:text-white"
+            className="rounded-full border border-gray-300 px-7 py-3 text-sm font-semibold text-gray-700 transition-colors duration-200 hover:border-gray-900 hover:text-gray-900 dark:border-gray-700 dark:text-gray-300 dark:hover:border-white dark:hover:text-white"
           >
             See how it works
           </a>
