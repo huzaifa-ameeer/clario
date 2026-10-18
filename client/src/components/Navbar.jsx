@@ -105,14 +105,14 @@ function Navbar() {
     "flex h-10 w-10 items-center justify-center rounded-full border border-gray-200 text-gray-600 transition-colors duration-200 hover:border-gray-900 hover:text-gray-900 dark:border-gray-700 dark:text-gray-300 dark:hover:border-white dark:hover:text-white";
 
   return (
-    <header className="fixed inset-x-0 top-0 z-50 bg-white dark:bg-[#030712]">
+    <header className="fixed inset-x-0 top-0 z-50 border-b border-gray-200/50 bg-white/80 backdrop-blur-md dark:border-gray-800/50 dark:bg-[#030712]/80">
       <nav className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
         <Link to="/" onClick={closeMenu} className="flex items-center gap-2">
           <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-violet-600 text-lg font-bold text-white">
             C
           </span>
           <span className="text-xl font-extrabold tracking-tight text-gray-900 dark:text-white">
-            Clario
+            Clariou
           </span>
         </Link>
 
@@ -192,7 +192,7 @@ function Navbar() {
       </nav>
 
       {isOpen && (
-        <div className="bg-white px-6 pb-6 pt-4 sm:hidden dark:bg-[#030712]">
+        <div className="border-b border-gray-200/50 bg-white/80 px-6 pb-6 pt-4 backdrop-blur-md sm:hidden dark:border-gray-800/50 dark:bg-[#030712]/80">
           <div className="flex flex-col gap-4">
             {showSectionLinks &&
               navLinks.map((link) => (
@@ -206,11 +206,11 @@ function Navbar() {
                 </a>
               ))}
             {user ? (
-              <div className="flex flex-col items-start gap-3">
+              <div className="flex flex-col items-stretch gap-3">
                 <Link
                   to="/main"
                   onClick={closeMenu}
-                  className="w-fit rounded-full bg-blue-600 px-5 py-2.5 text-center text-sm font-semibold text-white transition-colors duration-200 hover:bg-blue-700"
+                  className="w-full rounded-full bg-blue-600 px-5 py-2.5 text-center text-sm font-semibold text-white transition-colors duration-200 hover:bg-blue-700"
                 >
                   Dive now
                 </Link>
@@ -218,7 +218,7 @@ function Navbar() {
                   type="button"
                   onClick={handleLogout}
                   disabled={loggingOut}
-                  className="inline-flex w-fit cursor-pointer items-center gap-2 rounded-full bg-gray-900 px-5 py-2.5 text-center text-sm font-semibold text-white transition-colors duration-200 hover:bg-red-600 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-blue-600 dark:text-white dark:hover:bg-red-600"
+                  className="inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-full bg-gray-900 px-5 py-2.5 text-center text-sm font-semibold text-white transition-colors duration-200 hover:bg-red-600 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-blue-600 dark:text-white dark:hover:bg-red-600"
                 >
                   {loggingOut && <LoaderCircle size={16} className="animate-spin" />}
                   {loggingOut ? "Logging out..." : "Logout"}
