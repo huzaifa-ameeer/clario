@@ -6,6 +6,10 @@
   --font-sans: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   font-family: var(--font-sans);
   background-color: #fff;
@@ -20,8 +24,23 @@ body {
 
 header,
 header *,
+footer,
+footer *,
 section,
 section * {
   transition: background-color 0.05s linear, color 0.05s linear,
     border-color 0.05s linear;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
 }
