@@ -51,7 +51,7 @@ function Login() {
           Welcome back
         </h1>
         <p className="mt-2 text-center text-sm text-gray-600 dark:text-gray-400">
-          Sign in to continue to Clario
+          Sign in to continue to Clariou
         </p>
 
         {error && (
