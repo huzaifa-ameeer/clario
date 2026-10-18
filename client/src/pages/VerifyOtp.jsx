@@ -1,47 +1,55 @@
 import { useState } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
-import { ArrowLeft } from 'lucide-react'
+import { ArrowLeft, LoaderCircle } from 'lucide-react'
 import api from '../utils/api'
+import { notify } from '../utils/notify'
 
 function VerifyOtp() {
   const location = useLocation()
   const navigate = useNavigate()
   const [otp, setOtp] = useState('')
   const [newPassword, setNewPassword] = useState('')
-  const [loading, setLoading] = useState(false)
+  const [loadingAction, setLoadingAction] = useState('')
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
   const email = location.state?.email || sessionStorage.getItem('passwordResetEmail') || ''
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    setLoading(true)
+    setLoadingAction('verify')
     setError('')
     setSuccess('')
     try {
       const res = await api.post('/auth/verify-otp', { email, otp, newPassword })
       setSuccess(res.data.message)
+      notify(res.data.message)
       sessionStorage.removeItem('passwordResetEmail')
       localStorage.removeItem('authUser')
       setTimeout(() => navigate('/login'), 1500)
     } catch (err) {
-      setError(err.response?.data?.message || 'Verification failed')
+      const message = err.response?.data?.message || 'Verification failed'
+      setError(message)
+      notify(message, 'error')
     } finally {
-      setLoading(false)
+      setLoadingAction('')
     }
   }
 
   const handleResend = async () => {
-    setLoading(true)
+    setLoadingAction('resend')
     setError('')
+    setSuccess('')
     try {
       await api.post('/auth/resend-otp', { email })
       setSuccess('OTP resent successfully')
+      notify('OTP resent successfully')
       setTimeout(() => setSuccess(''), 2000)
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to resend OTP')
+      const message = err.response?.data?.message || 'Failed to resend OTP'
+      setError(message)
+      notify(message, 'error')
     } finally {
-      setLoading(false)
+      setLoadingAction('')
     }
   }
 
@@ -132,20 +140,26 @@ function VerifyOtp() {
 
           <button
             type="submit"
-            disabled={loading}
+            disabled={Boolean(loadingAction)}
             className="mt-2 rounded-full bg-gray-900 px-5 py-2.5 text-sm font-semibold text-white transition-colors duration-200 hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-blue-600 dark:text-white dark:hover:bg-purple-600"
           >
-            {loading ? 'Verifying...' : 'Verify & Reset'}
+            {loadingAction === 'verify' ? (
+              <span className="inline-flex items-center justify-center gap-2">
+                <LoaderCircle size={18} className="animate-spin" />
+                Verifying...
+              </span>
+            ) : 'Verify & Reset'}
           </button>
         </form>
 
         <button
           type="button"
           onClick={handleResend}
-          disabled={loading}
-          className="mt-4 w-full text-center text-sm font-medium text-blue-600 transition-colors duration-200 hover:text-blue-500 disabled:cursor-not-allowed disabled:opacity-60 dark:text-blue-400 dark:hover:text-blue-300"
+          disabled={Boolean(loadingAction)}
+          className="mt-4 inline-flex w-full cursor-pointer items-center justify-center gap-2 text-center text-sm font-medium text-blue-600 transition-colors duration-200 hover:text-blue-500 disabled:cursor-not-allowed disabled:opacity-60 dark:text-blue-400 dark:hover:text-blue-300"
         >
-          Resend OTP
+          {loadingAction === 'resend' && <LoaderCircle size={16} className="animate-spin" />}
+          {loadingAction === 'resend' ? 'Resending...' : 'Resend OTP'}
         </button>
       </div>
     </div>

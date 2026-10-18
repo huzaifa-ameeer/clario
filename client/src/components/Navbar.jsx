@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Menu, Moon, Sun, X } from "lucide-react";
+import { LoaderCircle, Menu, Moon, Sun, X } from "lucide-react";
 import api from "../utils/api";
+import { notify } from "../utils/notify";
 
 const navLinks = [
   { label: "Home", href: "#home", id: "home" },
@@ -15,6 +16,7 @@ function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [active, setActive] = useState("home");
   const [logoutError, setLogoutError] = useState("");
+  const [loggingOut, setLoggingOut] = useState(false);
   const [user, setUser] = useState(() => {
     try {
       return JSON.parse(localStorage.getItem("authUser") || "null");
@@ -68,17 +70,23 @@ function Navbar() {
 
   const closeMenu = () => setIsOpen(false);
   const handleLogout = async () => {
+    if (loggingOut) return;
     setLogoutError("");
+    setLoggingOut(true);
     try {
       await api.post("/auth/logout");
       localStorage.removeItem("authUser");
       setUser(null);
       window.dispatchEvent(new Event("auth-user-updated"));
       setIsOpen(false);
+      notify("Logged out successfully");
     } catch (error) {
-      setLogoutError(
-        error.response?.data?.message || "Logout failed. Please try again.",
-      );
+      const message =
+        error.response?.data?.message || "Logout failed. Please try again.";
+      setLogoutError(message);
+      notify(message, "error");
+    } finally {
+      setLoggingOut(false);
     }
   };
 
@@ -120,9 +128,11 @@ function Navbar() {
               <button
                 type="button"
                 onClick={handleLogout}
-                className="cursor-pointer rounded-full bg-gray-900 px-5 py-2 text-sm font-semibold text-white transition-colors duration-200 hover:bg-red-600 dark:bg-blue-600 dark:text-white dark:hover:bg-red-600"
+                disabled={loggingOut}
+                className="inline-flex cursor-pointer items-center gap-2 rounded-full bg-gray-900 px-5 py-2 text-sm font-semibold text-white transition-colors duration-200 hover:bg-red-600 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-blue-600 dark:text-white dark:hover:bg-red-600"
               >
-                Logout
+                {loggingOut && <LoaderCircle size={16} className="animate-spin" />}
+                {loggingOut ? "Logging out..." : "Logout"}
               </button>
             </div>
           ) : (
@@ -196,9 +206,11 @@ function Navbar() {
                 <button
                   type="button"
                   onClick={handleLogout}
-                  className="w-fit cursor-pointer rounded-full bg-gray-900 px-5 py-2.5 text-center text-sm font-semibold text-white transition-colors duration-200 hover:bg-red-600 dark:bg-blue-600 dark:text-white dark:hover:bg-red-600"
+                  disabled={loggingOut}
+                  className="inline-flex w-fit cursor-pointer items-center gap-2 rounded-full bg-gray-900 px-5 py-2.5 text-center text-sm font-semibold text-white transition-colors duration-200 hover:bg-red-600 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-blue-600 dark:text-white dark:hover:bg-red-600"
                 >
-                  Logout
+                  {loggingOut && <LoaderCircle size={16} className="animate-spin" />}
+                  {loggingOut ? "Logging out..." : "Logout"}
                 </button>
               </div>
             ) : (

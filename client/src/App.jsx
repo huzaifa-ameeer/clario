@@ -5,6 +5,7 @@ import Login from './pages/Login.jsx'
 import Signup from './pages/Signup.jsx'
 import ForgotPassword from './pages/ForgotPassword.jsx'
 import VerifyOtp from './pages/VerifyOtp.jsx'
+import ToastNotification from './components/ToastNotification.jsx'
 
 function App() {
   const location = useLocation()
@@ -13,6 +14,7 @@ function App() {
   return (
     <>
       {!hideNavbar && <Navbar />}
+      <ToastNotification />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />

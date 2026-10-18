@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { ArrowLeft } from 'lucide-react'
+import { ArrowLeft, LoaderCircle } from 'lucide-react'
 import api from '../utils/api'
+import { notify } from '../utils/notify'
 
 function ForgotPassword() {
   const [email, setEmail] = useState('')
@@ -16,18 +17,14 @@ function ForgotPassword() {
     setError('')
     setSuccess('')
     try {
-      // Alternative: modify flow - request OTP with email (public), verify OTP (public), reset (public).
-      // But we must follow existing backend? Backend protects forget-password/resend-otp/verify-otp.
-      // That means user must login first? Let us re-read: "Forget password requires login (protect middleware), 4-digit OTP..."
-      // So user needs to be logged in to request OTP. That’s odd but that’s the code.
-      // But better to add public endpoints? Or adjust client flow.
-      // For now, show message? But implement as per request - integrate backend.
-      // Alternative: login first with email+password? No. We’ll create proper flow matching backend.
       await api.post('/auth/forget-password', { email })
       sessionStorage.setItem('passwordResetEmail', email.trim())
+      notify('If an account exists for that email, an OTP has been sent')
       navigate('/verify-otp', { state: { email: email.trim() } })
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to send OTP')
+      const message = err.response?.data?.message || 'Failed to send OTP'
+      setError(message)
+      notify(message, 'error')
     } finally {
       setLoading(false)
     }
@@ -85,7 +82,12 @@ function ForgotPassword() {
             disabled={loading}
             className="mt-2 rounded-full bg-gray-900 px-5 py-2.5 text-sm font-semibold text-white transition-colors duration-200 hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-blue-600 dark:text-white dark:hover:bg-purple-600"
           >
-            {loading ? 'Sending...' : 'Send OTP'}
+            {loading ? (
+              <span className="inline-flex items-center justify-center gap-2">
+                <LoaderCircle size={18} className="animate-spin" />
+                Sending...
+              </span>
+            ) : 'Send OTP'}
           </button>
         </form>
       </div>

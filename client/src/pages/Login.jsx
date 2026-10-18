@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { ArrowLeft } from 'lucide-react'
+import { ArrowLeft, LoaderCircle } from 'lucide-react'
 import api from '../utils/api'
+import { notify } from '../utils/notify'
 
 function Login() {
   const navigate = useNavigate()
@@ -25,9 +26,12 @@ function Login() {
       const res = await api.post('/auth/login', formData)
       localStorage.setItem('authUser', JSON.stringify(res.data.user))
       window.dispatchEvent(new Event('auth-user-updated'))
+      notify('Logged in successfully')
       navigate('/dashboard')
     } catch (err) {
-      setError(err.response?.data?.message || 'Login failed')
+      const message = err.response?.data?.message || 'Login failed'
+      setError(message)
+      notify(message, 'error')
     } finally {
       setLoading(false)
     }
@@ -110,7 +114,12 @@ function Login() {
             disabled={loading}
             className="mt-2 rounded-full bg-gray-900 px-5 py-2.5 text-sm font-semibold text-white transition-colors duration-200 hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-blue-600 dark:text-white dark:hover:bg-purple-600"
           >
-            {loading ? 'Signing in...' : 'Sign in'}
+            {loading ? (
+              <span className="inline-flex items-center justify-center gap-2">
+                <LoaderCircle size={18} className="animate-spin" />
+                Signing in...
+              </span>
+            ) : 'Sign in'}
           </button>
         </form>
 
