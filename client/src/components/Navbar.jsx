@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Menu, Moon, Sun, X } from "lucide-react";
+import api from "../utils/api";
 
 const navLinks = [
   { label: "Home", href: "#home", id: "home" },
@@ -13,6 +14,14 @@ const sectionIds = ["home", "how-it-works", "features"];
 function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [active, setActive] = useState("home");
+  const [logoutError, setLogoutError] = useState("");
+  const [user, setUser] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem("authUser") || "null");
+    } catch {
+      return null;
+    }
+  });
   const [theme, setTheme] = useState(
     () => localStorage.getItem("theme") || "light",
   );
@@ -21,6 +30,23 @@ function Navbar() {
     document.documentElement.classList.toggle("dark", theme === "dark");
     localStorage.setItem("theme", theme);
   }, [theme]);
+
+  useEffect(() => {
+    const syncUser = () => {
+      try {
+        setUser(JSON.parse(localStorage.getItem("authUser") || "null"));
+      } catch {
+        setUser(null);
+      }
+    };
+
+    window.addEventListener("auth-user-updated", syncUser);
+    window.addEventListener("storage", syncUser);
+    return () => {
+      window.removeEventListener("auth-user-updated", syncUser);
+      window.removeEventListener("storage", syncUser);
+    };
+  }, []);
 
   useEffect(() => {
     const onScroll = () => {
@@ -41,6 +67,20 @@ function Navbar() {
     setTheme((current) => (current === "dark" ? "light" : "dark"));
 
   const closeMenu = () => setIsOpen(false);
+  const handleLogout = async () => {
+    setLogoutError("");
+    try {
+      await api.post("/auth/logout");
+      localStorage.removeItem("authUser");
+      setUser(null);
+      window.dispatchEvent(new Event("auth-user-updated"));
+      setIsOpen(false);
+    } catch (error) {
+      setLogoutError(
+        error.response?.data?.message || "Logout failed. Please try again.",
+      );
+    }
+  };
 
   const linkClass = (id) =>
     `text-sm font-medium transition-colors duration-200 ${
@@ -49,6 +89,8 @@ function Navbar() {
         : "text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
     }`;
 
+  const firstName =
+    typeof user?.name === "string" ? user.name.trim().split(/\s+/)[0] : "";
   const themeButtonClass =
     "flex h-10 w-10 items-center justify-center rounded-full border border-gray-200 text-gray-600 transition-colors duration-200 hover:border-gray-900 hover:text-gray-900 dark:border-gray-700 dark:text-gray-300 dark:hover:border-white dark:hover:text-white";
 
@@ -70,12 +112,32 @@ function Navbar() {
               {link.label}
             </a>
           ))}
-          <Link
-            to="/login"
-            className="rounded-full bg-gray-900 px-5 py-2 text-sm font-medium text-white transition-colors duration-200 hover:bg-blue-600 dark:bg-blue-600 dark:text-white dark:hover:bg-purple-600"
-          >
-            Get Started
-          </Link>
+          {firstName ? (
+            <div className="flex items-center gap-2">
+              <span className="cursor-pointer rounded-full border border-green-500 px-5 py-2 text-sm font-medium text-green-700 dark:text-green-400">
+                {firstName}
+              </span>
+              <button
+                type="button"
+                onClick={handleLogout}
+                className="cursor-pointer rounded-full bg-gray-900 px-5 py-2 text-sm font-semibold text-white transition-colors duration-200 hover:bg-red-600 dark:bg-blue-600 dark:text-white dark:hover:bg-red-600"
+              >
+                Logout
+              </button>
+            </div>
+          ) : (
+            <Link
+              to="/login"
+              className="rounded-full bg-gray-900 px-5 py-2 text-sm font-medium text-white transition-colors duration-200 hover:bg-blue-600 dark:bg-blue-600 dark:text-white dark:hover:bg-purple-600"
+            >
+              Get Started
+            </Link>
+          )}
+          {logoutError && (
+            <span role="alert" className="text-xs text-red-600">
+              {logoutError}
+            </span>
+          )}
           <button
             type="button"
             onClick={toggleTheme}
@@ -126,13 +188,33 @@ function Navbar() {
                 {link.label}
               </a>
             ))}
-            <Link
-              to="/login"
-              onClick={closeMenu}
-              className="rounded-full bg-gray-900 px-5 py-2.5 text-center text-sm font-medium text-white transition-colors duration-200 hover:bg-blue-600 dark:bg-blue-600 dark:text-white dark:hover:bg-purple-600"
-            >
-              Get Started
-            </Link>
+            {firstName ? (
+              <div className="flex items-center gap-2">
+                <span className="w-fit cursor-pointer rounded-full border border-green-500 px-5 py-2.5 text-sm font-medium text-green-700 dark:text-green-400">
+                  {firstName}
+                </span>
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  className="w-fit cursor-pointer rounded-full bg-gray-900 px-5 py-2.5 text-center text-sm font-semibold text-white transition-colors duration-200 hover:bg-red-600 dark:bg-blue-600 dark:text-white dark:hover:bg-red-600"
+                >
+                  Logout
+                </button>
+              </div>
+            ) : (
+              <Link
+                to="/login"
+                onClick={closeMenu}
+                className="rounded-full bg-gray-900 px-5 py-2.5 text-center text-sm font-medium text-white transition-colors duration-200 hover:bg-blue-600 dark:bg-blue-600 dark:text-white dark:hover:bg-purple-600"
+              >
+                Get Started
+              </Link>
+            )}
+            {logoutError && (
+              <span role="alert" className="text-xs text-red-600">
+                {logoutError}
+              </span>
+            )}
           </div>
         </div>
       )}
