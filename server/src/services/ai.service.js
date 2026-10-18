@@ -1,60 +1,45 @@
-const GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent"
+const GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models"
+
+const DEFAULT_MODELS = [
+    "gemini-3.8-flash",
+    "gemini-3.7-flash",
+    "gemini-3.6-flash",
+    "gemini-3.5-flash"
+]
+
+const getModels = () => {
+    const fromEnv = process.env.GEMINI_MODELS
+        ?.split(",")
+        .map((model) => model.trim())
+        .filter(Boolean)
+
+    return fromEnv?.length ? fromEnv : DEFAULT_MODELS
+}
 
 
 const buildPrompt = (text) => {
-  return `You are an expert document analyst and study-notes creator.
-Transform the following document content into beautiful, well-structured,
-easy-to-understand notes.
+  return `You are an expert document analyst. Read the document below and turn it into a set of sharp, engaging bullet points.
 
 Rules:
-- Organize content into meaningful sections with clear, descriptive headings.
-- Use concise bullet points to explain key concepts, facts, findings, and conclusions.
-- Use subheadings to group related information logically.
-- Highlight important terms, definitions, formulas, and key takeaways.
-- Include examples only when they help explain a concept.
-- Preserve important technical details, facts, and the original meaning.
-- Remove unnecessary repetition and irrelevant information.
-- Make the notes visually organized, readable, and useful for studying.
-- Use simple, clear language without oversimplifying complex concepts.
-- Do not invent information that is not present in the document.
-- Return valid JSON only, with no markdown fences or extra explanations.
+- Return a short, catchy title that captures the essence of the document.
+- Return 8 to 12 bullet points.
+- Each bullet must be one single line (max ~20 words), punchy and straight to the point.
+- Lead with the insight, fact, number, or takeaway — no filler like "This document says" or "It is important to note".
+- Use strong, active language; make every bullet feel valuable on its own.
+- Cover the key ideas, facts, findings, conclusions, and action items in order of importance.
+- Surface interesting numbers, comparisons, or surprises when present.
+- Do not invent information that is not in the document.
+- No markdown, no asterisks, no numbering inside the bullet text — plain sentences only.
+- Return valid JSON only, with no explanation outside the JSON.
 
 Required JSON structure:
 {
-  "title": "A suitable title for the notes",
-  "description": "A short overview of the document",
-  "sections": [
-    {
-      "heading": "Section heading",
-      "content": [
-        {
-          "type": "paragraph",
-          "text": "A short introduction to the topic."
-        },
-        {
-          "type": "bullet",
-          "text": "An important point or explanation."
-        },
-        {
-          "type": "definition",
-          "term": "Important term",
-          "meaning": "Its clear and accurate definition."
-        },
-        {
-          "type": "example",
-          "text": "A relevant example, when available."
-        }
-      ]
-    }
-  ],
-  "keyTakeaways": [
-    "The most important thing to remember."
+  "title": "A catchy title for the document",
+  "bullets": [
+    "First powerful bullet point.",
+    "Second powerful bullet point."
   ]
 }
-
-Include only content types that are relevant to the document.
-Create enough sections to cover the important material without unnecessary
-fragmentation. Keep the notes concise but informative.
 
 Document content:
 """
@@ -63,12 +48,8 @@ ${text}
 };
 
 
-export const analyzeText = async (text) => {
-    if (!text || !text.trim()) {
-        throw new Error("No text content to analyze")
-    }
-
-    const response = await fetch(`${GEMINI_API_URL}?key=${process.env.GEMINI_API_KEY}`, {
+const callModel = async (model, text) => {
+    const response = await fetch(`${GEMINI_API_URL}/${model}:generateContent?key=${process.env.GEMINI_API_KEY}`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
@@ -100,13 +81,36 @@ export const analyzeText = async (text) => {
 
     const cleaned = raw.replace(/```json|```/g, "").trim()
 
-    try {
-        const bullets = JSON.parse(cleaned)
-        if (!Array.isArray(bullets)) {
-            throw new Error("Response is not an array")
-        }
-        return bullets
-    } catch {
-        throw new Error("Failed to parse AI response into bullet points")
+    const parsed = JSON.parse(cleaned)
+
+    if (
+        !parsed ||
+        typeof parsed !== "object" ||
+        typeof parsed.title !== "string" ||
+        !Array.isArray(parsed.bullets) ||
+        parsed.bullets.length === 0
+    ) {
+        throw new Error("Unexpected AI response format")
     }
+
+    return parsed
+}
+
+export const analyzeText = async (text) => {
+    if (!text || !text.trim()) {
+        throw new Error("No text content to analyze")
+    }
+
+    const models = getModels()
+    const errors = []
+
+    for (const model of models) {
+        try {
+            return await callModel(model, text)
+        } catch (error) {
+            errors.push(`${model}: ${error.message}`)
+        }
+    }
+
+    throw new Error(`All Gemini models failed. ${errors.join(" | ")}`)
 }
