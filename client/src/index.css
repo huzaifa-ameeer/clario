@@ -75,22 +75,11 @@ body {
   font-family: var(--font-sans);
   background-color: #fff;
   color: #111827;
-  transition: background-color 0.05s linear, color 0.05s linear;
 }
 
 .dark body {
   background-color: #030712;
   color: #f9fafb;
-}
-
-header,
-header *,
-footer,
-footer *,
-section,
-section * {
-  transition: background-color 0.05s linear, color 0.05s linear,
-    border-color 0.05s linear;
 }
 
 @media (prefers-reduced-motion: reduce) {
