@@ -55,7 +55,7 @@ function Signup() {
           Create your account
         </h1>
         <p className="mt-2 text-center text-sm text-gray-600 dark:text-gray-400">
-          Get started with Clariou for free
+          Get started with Clarious for free
         </p>
 
         {error && (

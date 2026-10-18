@@ -112,7 +112,7 @@ function Navbar() {
             C
           </span>
           <span className="text-xl font-extrabold tracking-tight text-gray-900 dark:text-white">
-            Clariou
+            Clarious
           </span>
         </Link>
 

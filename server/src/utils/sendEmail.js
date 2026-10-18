@@ -10,7 +10,7 @@ export const sendOtpEmail = async (to, name, otp) => {
     await resend.emails.send({
         from: process.env.EMAIL_FROM,
         to,
-        subject: "Your OTP for Password Reset - Clariou",
+        subject: "Your OTP for Password Reset - Clarious",
         html: `
             <!DOCTYPE html>
             <html>
@@ -21,7 +21,7 @@ export const sendOtpEmail = async (to, name, otp) => {
                             <table width="500" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
                                 <tr>
                                     <td style="padding: 32px; border-bottom: 1px solid #eeeeee;">
-                                        <h2 style="margin: 0; color: #333333;">Clariou</h2>
+                                        <h2 style="margin: 0; color: #333333;">Clarious</h2>
                                     </td>
                                 </tr>
                                 <tr>
@@ -46,7 +46,7 @@ export const sendOtpEmail = async (to, name, otp) => {
                                 </tr>
                                 <tr>
                                     <td style="padding: 24px 32px; background-color: #fafafa; border-top: 1px solid #eeeeee;">
-                                        <p style="margin: 0; color: #999999; font-size: 12px;">&copy; ${new Date().getFullYear()} Clariou. All rights reserved.</p>
+                                        <p style="margin: 0; color: #999999; font-size: 12px;">&copy; ${new Date().getFullYear()} Clarious. All rights reserved.</p>
                                     </td>
                                 </tr>
                             </table>

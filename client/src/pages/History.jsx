@@ -134,7 +134,7 @@ function History() {
                   No documents yet
                 </h2>
                 <p className="max-w-sm text-sm leading-relaxed text-gray-500 dark:text-gray-400">
-                  Upload your first document and Clariou AI will turn it into a
+                  Upload your first document and Clarious AI will turn it into a
                   clean, scannable summary.
                 </p>
                 <Link

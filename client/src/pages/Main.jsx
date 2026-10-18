@@ -140,7 +140,7 @@ function Main() {
     progress < 40
       ? "Uploading your document…"
       : progress < 90
-        ? "Clariou AI is reading every page…"
+        ? "Clarious AI is reading every page…"
         : "Almost ready…";
 
   return (
@@ -156,7 +156,7 @@ function Main() {
         </h1>
 
         <p className="mx-auto max-w-xl text-base leading-relaxed text-gray-600 sm:text-lg dark:text-gray-400">
-          Drop in any PDF or Word document and Clariou turns it into a clean,
+          Drop in any PDF or Word document and Clarious turns it into a clean,
           scannable summary — sharp bullets, key takeaways, nothing you don't
           need.
         </p>
