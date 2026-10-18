@@ -17,7 +17,7 @@ function Hero() {
         </h1>
 
         <p className="mx-auto max-w-xl text-base leading-relaxed text-gray-600 sm:text-lg dark:text-gray-400">
-          Drop in any PDF or Word document and Clario turns it into a clean,
+          Drop in any PDF or Word document and Clariou turns it into a clean,
           scannable summary — sharp bullets, key takeaways, and nothing you
           don't need. No reading through pages. Just the points that matter.
         </p>
