@@ -29,9 +29,10 @@ function Signup() {
     setSuccess('')
     try {
       const res = await api.post('/auth/register', formData)
-      setSuccess(res.data.message)
+      localStorage.setItem('authUser', JSON.stringify(res.data.user))
+      window.dispatchEvent(new Event('auth-user-updated'))
       notify('Account created successfully')
-      setTimeout(() => navigate('/login'), 1500)
+      navigate('/main', { replace: true })
     } catch (err) {
       const message = err.response?.data?.message || 'Registration failed'
       setError(message)
