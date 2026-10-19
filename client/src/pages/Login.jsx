@@ -11,6 +11,7 @@ function Login() {
     password: '',
   })
   const [loading, setLoading] = useState(false)
+  const [waking, setWaking] = useState(false)
   const [error, setError] = useState('')
 
   const handleChange = (e) => {
@@ -22,6 +23,8 @@ function Login() {
     e.preventDefault()
     setLoading(true)
     setError('')
+    setWaking(false)
+    const wakeTimer = setTimeout(() => setWaking(true), 2500)
     try {
       const res = await api.post('/auth/login', formData)
       localStorage.setItem('authUser', JSON.stringify(res.data.user))
@@ -33,6 +36,8 @@ function Login() {
       setError(message)
       notify(message, 'error')
     } finally {
+      clearTimeout(wakeTimer)
+      setWaking(false)
       setLoading(false)
     }
   }
@@ -117,7 +122,9 @@ function Login() {
             {loading ? (
               <span className="inline-flex items-center justify-center gap-2">
                 <LoaderCircle size={18} className="animate-spin" />
-                Signing in...
+                {waking
+                  ? 'Waking up the server — first visit can take up to 30s'
+                  : 'Signing in...'}
               </span>
             ) : 'Sign in'}
           </button>
