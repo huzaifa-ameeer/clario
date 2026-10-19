@@ -7,11 +7,12 @@ export const sendOtpEmail = async (to, name, otp) => {
         resend = new Resend(process.env.RESEND_API_KEY)
     }
 
-    await resend.emails.send({
-        from: process.env.EMAIL_FROM,
-        to,
-        subject: "Your OTP for Password Reset - Clarious",
-        html: `
+    try {
+        await resend.emails.send({
+            from: process.env.EMAIL_FROM || "onboarding@resend.dev",
+            to,
+            subject: "Your OTP for Password Reset - Clarious",
+            html: `
             <!DOCTYPE html>
             <html>
             <body style="margin: 0; padding: 0; font-family: Arial, sans-serif; background-color: #f4f4f7;">
@@ -56,5 +57,9 @@ export const sendOtpEmail = async (to, name, otp) => {
             </body>
             </html>
         `
-    })
+        })
+    } catch (error) {
+        console.error("Email send failed:", error)
+        throw error
+    }
 }
