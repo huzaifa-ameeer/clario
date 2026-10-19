@@ -1,4 +1,4 @@
-import bcrypt from "bcryptjs"
+import bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
 import { randomInt } from "node:crypto"
 import User from "../models/user.model.js"
@@ -87,6 +87,8 @@ export const register = async (req, res) => {
 }
 
 export const login = async (req, res) => {
+    const totalStart = performance.now()
+    const timings = []
     try {
         const { email, password } = req.body
 
@@ -94,18 +96,27 @@ export const login = async (req, res) => {
             return res.status(400).json({ message: "Email and password are required" })
         }
 
+        const dbStart = performance.now()
         const user = await User.findOne({ email: email.trim().toLowerCase() })
+        timings.push(`db;dur=${(performance.now() - dbStart).toFixed(1)}`)
         if (!user) {
+            res.set("Server-Timing", timings.join(", "))
             return res.status(401).json({ message: "Invalid email or password" })
         }
 
+        const bcryptStart = performance.now()
         const isPasswordValid = await bcrypt.compare(password, user.password)
+        timings.push(`bcrypt;dur=${(performance.now() - bcryptStart).toFixed(1)}`)
         if (!isPasswordValid) {
+            res.set("Server-Timing", timings.join(", "))
             return res.status(401).json({ message: "Invalid email or password" })
         }
 
         const token = generateToken(user._id)
         setTokenCookie(res, token)
+
+        timings.push(`total;dur=${(performance.now() - totalStart).toFixed(1)}`)
+        res.set("Server-Timing", timings.join(", "))
 
         return res.status(200).json({
             message: "Login successful",

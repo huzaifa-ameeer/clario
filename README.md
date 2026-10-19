@@ -25,7 +25,7 @@ Upload a document, and Clarious reads every page and returns a catchy title plus
 | Layer | Stack |
 |---|---|
 | Frontend | React 19, Vite 8, Tailwind CSS 4, React Router 7, Axios, lucide-react |
-| Backend | Node.js, Express 5, Mongoose 9, JWT, Multer, bcryptjs |
+| Backend | Node.js, Express 5, Mongoose 9, JWT, Multer, bcrypt |
 | AI | Google Gemini (with automatic model fallback) |
 | Email | Resend |
 | Deploy | Vercel (frontend), Render (backend), MongoDB Atlas (DB) |
