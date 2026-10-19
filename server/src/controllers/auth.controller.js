@@ -42,19 +42,34 @@ export const register = async (req, res) => {
             return res.status(400).json({ message: "All fields are required" })
         }
 
-        const existingUser = await User.findOne({ email })
-        if (existingUser) {
+        const emailNormalized = email.trim().toLowerCase()
+
+        const [hashedPassword, existing] = await Promise.all([
+            bcrypt.hash(password, 10),
+            User.exists({ email: emailNormalized })
+        ])
+
+        if (existing) {
             return res.status(409).json({ message: "Email already registered" })
         }
 
-        const hashedPassword = await bcrypt.hash(password, 10)
+        let user
+        try {
+            user = await User.create({
+                name: name.trim(),
+                email: emailNormalized,
+                password: hashedPassword,
+                occupation
+            })
+        } catch (err) {
+            if (err.code === 11000) {
+                return res.status(409).json({ message: "Email already registered" })
+            }
+            throw err
+        }
 
-        const user = await User.create({
-            name,
-            email,
-            password: hashedPassword,
-            occupation
-        })
+        const token = generateToken(user._id)
+        setTokenCookie(res, token)
 
         return res.status(201).json({
             message: "User registered successfully",
@@ -79,7 +94,7 @@ export const login = async (req, res) => {
             return res.status(400).json({ message: "Email and password are required" })
         }
 
-        const user = await User.findOne({ email })
+        const user = await User.findOne({ email: email.trim().toLowerCase() })
         if (!user) {
             return res.status(401).json({ message: "Invalid email or password" })
         }
