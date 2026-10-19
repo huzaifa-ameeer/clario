@@ -27,12 +27,16 @@ function ChatGPTSpinner() {
       {Array.from({ length: DOT_COUNT }).map((_, i) => (
         <span
           key={i}
-          className="chatgpt-dot absolute top-1/2 left-1/2 h-2 w-2 rounded-full bg-gray-900 dark:bg-white"
+          className="absolute top-1/2 left-1/2 h-2 w-2"
           style={{
             transform: `translate(-50%, -50%) rotate(${(360 / DOT_COUNT) * i}deg) translateY(-16px)`,
-            animationDelay: `${(i * 1) / DOT_COUNT}s`,
           }}
-        />
+        >
+          <span
+            className="chatgpt-dot block h-full w-full rounded-full bg-gray-900 dark:bg-white"
+            style={{ animationDelay: `${(i * 1) / DOT_COUNT}s` }}
+          />
+        </span>
       ))}
     </div>
   );
